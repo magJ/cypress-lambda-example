@@ -15,13 +15,8 @@ module.exports = defineConfig({
               "--single-process",
               "--disable-gpu",
               "--single-process",
-              "--no-zygote",
               "--disable-setuid-sandbox",
-              "--hide-scrollbars",
               "--disable-extensions",
-              "--disable-features=VizDisplayCompositor",
-              "--disable-features=NetworkService",
-              "--disable-extensions"
             );
           }
           return browserLaunchOptions;
