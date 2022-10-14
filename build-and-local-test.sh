@@ -3,7 +3,14 @@ set -euo pipefail
 cd $(dirname $0)
 
 docker build -t cypress-lambda-example .
-container_id=$(docker run -it -p 9000:8080 --read-only --tmpfs /tmp -u 1000 --detach cypress-lambda-example)
+container_id=$(
+    docker run -it -p 9000:8080 \
+    --read-only \
+    --mount type=tmpfs,destination=/tmp,tmpfs-size=536870912 \
+    --ipc none \
+    -u 1000 \
+    --detach \
+    cypress-lambda-example)
 # wait for container to start up
 sleep 3
 
