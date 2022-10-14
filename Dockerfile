@@ -1,5 +1,6 @@
 FROM public.ecr.aws/lambda/nodejs:16
 
+# Cypress dependencies, and binutils for patching binary
 RUN yum install -y \
     xorg-x11-server-Xvfb \
     gtk2-devel \
@@ -9,6 +10,11 @@ RUN yum install -y \
     nss \
     libXScrnSaver \
     alsa-lib \
+    binutils && \
+    yum clean all
+
+# Install chromium, not nessesary if using cypress's embedded electron
+RUN yum install -y \
     amazon-linux-extras && \
     amazon-linux-extras install epel -y && \
     yum install -y \
@@ -21,18 +27,16 @@ ENV XDG_CONFIG_HOME=/tmp
 RUN mkdir $CYPRESS_CACHE_FOLDER
 
 COPY package.json package-lock.json ./
+# Patches Cypress electron binary to not use /dev/shm
+COPY patch-cypress.sh .
+RUN npm i && chmod -R +r $CYPRESS_CACHE_FOLDER && ./patch-cypress.sh
 
-RUN npm i && chmod -R +r $CYPRESS_CACHE_FOLDER
 COPY cypress.config.ts tsconfig.json ./
 COPY tests ./tests
 COPY src ./src
 RUN npx cypress verify
 RUN npx tsc
 RUN rm cypress.config.js
-
-# Even though we are using chrome, electron still gets initialised in the cypress boot process
-# Until cypress supports running without electron, we need these flags to prevent it crashing
-ENV ELECTRON_EXTRA_LAUNCH_ARGS="--no-zygote --disable-gpu --single-process"
 
 # Only used for local testing of unprivleged users, lambda will create it's own user
 RUN /sbin/adduser testuser

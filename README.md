@@ -1,10 +1,8 @@
 # Cypress on AWS lambda example
 
-A demonstration of how to run cypress on AWS lambda, using chromium.
+A demonstration of how to run cypress on AWS lambda, using electron and/or chromium.
 
 I've tried to make this as minimal as possible, but there might be some ways this could be simplified further.
-
-I wasn't able to get cypress's embedded electron to work on lambda.
 
 ## Building and running this example yourself
 `build-and-local-test.sh` will build the container image, and test it locally, 
@@ -14,13 +12,9 @@ Once the image is built you will have to push it to an ECR repo, and create your
 
 A lambda with 2GB of ram seems to work ok.
 
+## Things of note
+If you want to save screenshots or video, you may need to run the project from the tmp dir, 
+see the initial commit for an example of this.
 
-## Further possible improvements/simplifications
-
-If cypress supported being installed, and running without electron, it would reduce the size of the image by about half a gigabyte.  
-
-If cypress supported running from a read-only file-system, the lambda handler code would be simpler.  
-
-It's possible that some of the flags passed to chrome aren't necessary, although I haven't tried all combinations.
-
-It might be possible to reduce the image size by omitting some of the system dependencies, or installing chromium differently.
+If you don't want to use electron, you can avoid patching it's binary, although you will still need to set some environment variables
+See the documentation in the `patch-cypress.sh` file.
