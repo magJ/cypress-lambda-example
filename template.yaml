@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  CypressLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Timeout: 300
+      MemorySize: 2048
+      PackageType: Image
+      Architectures:
+        - x86_64
+    Metadata:
+      DockerTag: sam-cypress-lambda-example
+      DockerContext: .
+      Dockerfile: Dockerfile

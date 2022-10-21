@@ -7,10 +7,8 @@ for cypress_version_dir in "$cypress_cache_dir"/*; do
   cypress_electron_binary_location="$cypress_version_dir/Cypress/Cypress"
   # Patches cypress's electron binary to replace references to /dev/shm to /tmp/shm, as /dev/shm isn't writable on lambda
   #
-  # If this is too hacky for you, and you want to use another browser like chromium.
-  # You will need still to set ELECTRON_EXTRA_LAUNCH_ARGS="--no-zygote --disable-gpu --single-process"
-  # Because electron is still invoked in the cypress initialization process, regardless of if you intent to use it or not
-  # The above environment variables will be enough for the electron initialization to proceed, and avoid the need to patch
+  # Alternatively setting ELECTRON_EXTRA_LAUNCH_ARGS="--no-zygote --disable-gpu --single-process", seems to be enough for
+  # cypress to make it past initialisation, and start chromium, but it still seems to occasionally crash
   position=$(strings -t d $cypress_electron_binary_location | grep "/dev/shm" | cut -d" " -f1)
   for i in $position; do
     echo -n "/tmp/shm/" | dd bs=1 of=$cypress_electron_binary_location seek="$i" conv=notrunc

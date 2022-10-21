@@ -1,10 +1,6 @@
 import * as cypress from "cypress";
 
 export const handler = async () => {
-  console.log("Running cypress tests with electron");
-  await cypress.run({
-    headless: true,
-  });
   console.log("Running cypress tests with chromium");
   await cypress.run({
     headless: true,

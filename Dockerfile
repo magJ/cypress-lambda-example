@@ -13,7 +13,7 @@ RUN yum install -y \
     binutils && \
     yum clean all
 
-# Install chromium, not nessesary if using cypress's embedded electron
+# Install chromium
 RUN yum install -y \
     amazon-linux-extras && \
     amazon-linux-extras install epel -y && \
@@ -36,7 +36,8 @@ COPY tests ./tests
 COPY src ./src
 RUN npx cypress verify
 RUN npx tsc
-RUN rm cypress.config.js
+
+ENV ELECTRON_EXTRA_LAUNCH_ARGS="--no-zygote --disable-gpu --single-process"
 
 # Only used for local testing of unprivleged users, lambda will create it's own user
 RUN /sbin/adduser testuser
